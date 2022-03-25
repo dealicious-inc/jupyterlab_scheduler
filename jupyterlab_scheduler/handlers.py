@@ -111,10 +111,12 @@ class AddJob(APIHandler):
 
         command_prefix_portion = "echo \"`date` [Cronjob executing]\" >> {}/{}.log &&".format(LOG_BASE_PATH, cleaned_script_name)
         command_log_portion = ">> {}/{}.log 2>&1".format(LOG_BASE_PATH, cleaned_script_name)
-     
+
+        env_list = ["PATH", "JUPYTER_SECRET_NAME"]
+
         with CronTab(user=os.environ["USER"]) as cron:
             for key, value in os.environ.items():
-                if key == "PATH":
+                if key in env_list:
                     cron.env[key] = value
             
             job = cron.new(command="{} {} {}".format(command_prefix_portion, command, command_log_portion), comment=comment)
